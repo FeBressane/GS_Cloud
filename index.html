@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AgroSatélite | Monitoramento Agrícola</title>
+
+  <style>
+    :root {
+      --bg: #07170f;
+      --card: #10281a;
+      --green: #6ee7a8;
+      --green-2: #22c55e;
+      --yellow: #facc15;
+      --orange: #fb923c;
+      --red: #ef4444;
+      --text: #f8fafc;
+      --muted: #cbd5e1;
+      --border: rgba(255,255,255,0.12);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(34, 197, 94, 0.18), transparent 32%),
+        radial-gradient(circle at bottom right, rgba(250, 204, 21, 0.12), transparent 28%),
+        var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    header {
+      min-height: 78vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 64px 20px;
+      text-align: center;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .hero {
+      max-width: 980px;
+    }
+
+    .tag {
+      display: inline-block;
+      padding: 8px 14px;
+      margin-bottom: 22px;
+      border-radius: 999px;
+      border: 1px solid rgba(110, 231, 168, 0.35);
+      background: rgba(110, 231, 168, 0.08);
+      color: var(--green);
+      font-weight: 700;
+      letter-spacing: 0.4px;
+    }
+
+    h1 {
+      font-size: clamp(2.6rem, 6vw, 5.4rem);
+      line-height: 1;
+      margin-bottom: 20px;
+    }
+
+    .hero p {
+      max-width: 760px;
+      margin: 0 auto 30px;
+      color: var(--muted);
+      font-size: 1.15rem;
+    }
+
+    .actions {
+      display: flex;
+      justify-content: center;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      text-decoration: none;
+      color: #06130c;
+      background: var(--green);
+      padding: 13px 20px;
+      border-radius: 12px;
+      font-weight: 700;
+      transition: 0.2s;
+    }
+
+    .btn.secondary {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text);
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      opacity: 0.92;
+    }
+
+    main {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 56px 20px;
+    }
+
+    section {
+      margin-bottom: 56px;
+    }
+
+    .section-title {
+      font-size: 2rem;
+      margin-bottom: 14px;
+    }
+
+    .section-subtitle {
+      color: var(--muted);
+      max-width: 850px;
+      margin-bottom: 24px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+    }
+
+    .card {
+      background: linear-gradient(180deg, rgba(255,255,255,0.055), rgba(255,255,255,0.025));
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 22px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.18);
+    }
+
+    .member h3 {
+      color: var(--green);
+      margin-bottom: 8px;
+      font-size: 1.15rem;
+    }
+
+    .member p {
+      color: var(--muted);
+      font-weight: 700;
+    }
+
+    .description {
+      display: grid;
+      grid-template-columns: 1.25fr 0.75fr;
+      gap: 18px;
+      align-items: stretch;
+    }
+
+    .ods-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .ods {
+      border-left: 4px solid var(--green);
+      padding: 12px 14px;
+      background: rgba(110, 231, 168, 0.07);
+      border-radius: 12px;
+      color: var(--muted);
+    }
+
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 18px;
+    }
+
+    .metric-value {
+      font-size: 2.2rem;
+      font-weight: 800;
+      margin: 8px 0;
+      color: var(--green);
+    }
+
+    .metric-label {
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+
+    .chart-wrapper {
+      background: rgba(255,255,255,0.035);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 22px;
+      overflow-x: auto;
+    }
+
+    canvas {
+      width: 100%;
+      min-width: 720px;
+      max-height: 420px;
+      display: block;
+    }
+
+    .legend {
+      display: flex;
+      gap: 18px;
+      flex-wrap: wrap;
+      margin-top: 18px;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .legend span {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+
+    .dot.green { background: var(--green-2); }
+    .dot.yellow { background: var(--yellow); }
+    .dot.orange { background: var(--orange); }
+
+    .routes {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+    }
+
+    .route {
+      color: var(--text);
+      text-decoration: none;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 16px;
+      background: rgba(255,255,255,0.04);
+    }
+
+    .route strong {
+      color: var(--green);
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    footer {
+      padding: 30px 20px;
+      text-align: center;
+      color: var(--muted);
+      border-top: 1px solid var(--border);
+      background: rgba(0,0,0,0.18);
+    }
+
+    @media (max-width: 900px) {
+      .grid,
+      .description,
+      .metrics,
+      .routes {
+        grid-template-columns: 1fr;
+      }
+
+      header {
+        min-height: auto;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <div class="hero">
+      <span class="tag">Global Solution 2026 · FIAP · Azure Cloud</span>
+      <h1>AgroSatélite</h1>
+      <p>
+        Plataforma de monitoramento agrícola por sensoriamento remoto, criada para transformar
+        dados orbitais e climáticos em decisões práticas para produtores rurais.
+      </p>
+      <div class="actions">
+        <a class="btn" href="#grafico">Ver gráfico fictício</a>
+        <a class="btn secondary" href="#equipe">Conhecer equipe</a>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section id="equipe">
+      <h2 class="section-title">Equipe e RM</h2>
+      <p class="section-subtitle">
+        Integrantes responsáveis pelo desenvolvimento da solução AgroSatélite.
+      </p>
+
+      <div class="grid">
+        <article class="card member">
+          <h3>Camila do Prado Padalino</h3>
+          <p>RM 98316</p>
+        </article>
+
+        <article class="card member">
+          <h3>Gabriel Teixeira Machado</h3>
+          <p>RM 551570</p>
+        </article>
+
+        <article class="card member">
+          <h3>Felipe Cavalcante Bressane</h3>
+          <p>RM 97688</p>
+        </article>
+      </div>
+    </section>
+
+    <section id="projeto">
+      <h2 class="section-title">Descrição do Projeto</h2>
+      <div class="description">
+        <article class="card">
+          <p>
+            O <strong>AgroSatélite</strong> é uma solução web voltada ao monitoramento agrícola
+            por meio de dados de sensoriamento remoto. A proposta é apoiar produtores rurais
+            na identificação de sinais de estresse hídrico, risco de pragas, anomalias na lavoura
+            e previsão de produtividade.
+          </p>
+          <br />
+          <p>
+            A aplicação representa um dashboard em nuvem, hospedado no Azure App Service, com
+            indicadores simulados de NDVI, déficit hídrico, risco de pragas e produtividade esperada.
+            O objetivo é demonstrar como tecnologias espaciais podem ser aplicadas ao agronegócio
+            de forma acessível, escalável e segura.
+          </p>
+        </article>
+
+        <aside class="card">
+          <h3>ODS relacionados</h3>
+          <div class="ods-list">
+            <div class="ods"><strong>ODS 2:</strong> Agricultura sustentável</div>
+            <div class="ods"><strong>ODS 9:</strong> Inovação e infraestrutura</div>
+            <div class="ods"><strong>ODS 13:</strong> Ação climática</div>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <section>
+      <h2 class="section-title">Indicadores Fictícios do Monitoramento</h2>
+      <p class="section-subtitle">
+        Dados simulados para representar o funcionamento do dashboard do AgroSatélite.
+      </p>
+
+      <div class="metrics">
+        <article class="card">
+          <p class="metric-label">NDVI médio</p>
+          <p class="metric-value">0.74</p>
+          <p class="metric-label">Vegetação saudável</p>
+        </article>
+
+        <article class="card">
+          <p class="metric-label">Risco de praga</p>
+          <p class="metric-value">32%</p>
+          <p class="metric-label">Risco moderado</p>
+        </article>
+
+        <article class="card">
+          <p class="metric-label">Déficit hídrico</p>
+          <p class="metric-value">18%</p>
+          <p class="metric-label">Atenção nos próximos dias</p>
+        </article>
+
+        <article class="card">
+          <p class="metric-label">Produtividade esperada</p>
+          <p class="metric-value">87%</p>
+          <p class="metric-label">Estimativa positiva</p>
+        </article>
+      </div>
+    </section>
+
+    <section id="grafico">
+      <h2 class="section-title">Gráfico com Dados Fictícios</h2>
+      <p class="section-subtitle">
+        Comparação mensal entre NDVI, risco de praga e déficit hídrico para simular o acompanhamento de uma lavoura.
+      </p>
+
+      <div class="chart-wrapper">
+        <canvas id="agroChart" width="1100" height="520"></canvas>
+        <div class="legend">
+          <span><i class="dot green"></i> NDVI médio</span>
+          <span><i class="dot yellow"></i> Risco de praga (%)</span>
+          <span><i class="dot orange"></i> Déficit hídrico (%)</span>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2 class="section-title">Rotas para Testes no Azure</h2>
+      <p class="section-subtitle">
+        Estas rotas ajudam a gerar evidências de monitoramento no Application Insights, Metrics e Log Stream.
+      </p>
+
+      <div class="routes">
+        <a class="route" href="/">
+          <strong>/</strong>
+          Página principal
+        </a>
+
+        <a class="route" href="/health">
+          <strong>/health</strong>
+          Status da aplicação
+        </a>
+
+        <a class="route" href="/api/indicadores">
+          <strong>/api/indicadores</strong>
+          Dados fictícios em JSON
+        </a>
+
+        <a class="route" href="/erro">
+          <strong>/erro</strong>
+          Simulação de erro 500
+        </a>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    AgroSatélite · Global Solution 2026 · Engenharia de Software · FIAP
+  </footer>
+
+  <script>
+    const canvas = document.getElementById("agroChart");
+    const ctx = canvas.getContext("2d");
+
+    const months = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun"];
+    const ndvi = [0.62, 0.68, 0.73, 0.76, 0.74, 0.70];
+    const pragas = [18, 24, 28, 32, 36, 30];
+    const deficit = [12, 15, 18, 21, 19, 17];
+
+    const padding = 72;
+    const chartWidth = canvas.width - padding * 2;
+    const chartHeight = canvas.height - padding * 2;
+
+    function yPos(value, max) {
+      return canvas.height - padding - (value / max) * chartHeight;
+    }
+
+    function xPos(index) {
+      return padding + (index * chartWidth) / (months.length - 1);
+    }
+
+    function drawGrid() {
+      ctx.strokeStyle = "rgba(255,255,255,0.12)";
+      ctx.fillStyle = "#cbd5e1";
+      ctx.font = "16px Arial";
+
+      for (let i = 0; i <= 5; i++) {
+        const y = padding + (i * chartHeight) / 5;
+        ctx.beginPath();
+        ctx.moveTo(padding, y);
+        ctx.lineTo(canvas.width - padding, y);
+        ctx.stroke();
+
+        const label = Math.round(100 - i * 20);
+        ctx.fillText(label + "%", 18, y + 5);
+      }
+
+      months.forEach((month, i) => {
+        ctx.fillText(month, xPos(i) - 14, canvas.height - 28);
+      });
+    }
+
+    function drawLine(data, max, color, labelFormatter) {
+      ctx.strokeStyle = color;
+      ctx.lineWidth = 4;
+      ctx.beginPath();
+
+      data.forEach((value, i) => {
+        const x = xPos(i);
+        const y = yPos(value, max);
+        if (i === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      });
+
+      ctx.stroke();
+
+      data.forEach((value, i) => {
+        const x = xPos(i);
+        const y = yPos(value, max);
+
+        ctx.fillStyle = color;
+        ctx.beginPath();
+        ctx.arc(x, y, 7, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.fillStyle = "#f8fafc";
+        ctx.font = "14px Arial";
+        ctx.fillText(labelFormatter(value), x - 18, y - 14);
+      });
+    }
+
+    function drawChart() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      ctx.fillStyle = "#f8fafc";
+      ctx.font = "bold 26px Arial";
+      ctx.fillText("Monitoramento Fictício da Lavoura", padding, 42);
+
+      drawGrid();
+
+      drawLine(ndvi.map(v => v * 100), 100, "#22c55e", v => (v / 100).toFixed(2));
+      drawLine(pragas, 100, "#facc15", v => v + "%");
+      drawLine(deficit, 100, "#fb923c", v => v + "%");
+    }
+
+    drawChart();
+  </script>
+</body>
+</html>
