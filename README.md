@@ -50,7 +50,7 @@ npm start
 Depois, acesse:
 
 ```text
-http://localhost:8080
+http://localhost:8080 
 ```
 
 ## Rotas da aplicação
